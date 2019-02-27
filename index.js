@@ -21,7 +21,7 @@ server.get('/', (req, res) => {
 
 server.post('/api/register', (req, res) => {
     let user = req.body;
-    if (user.username && user.password) {
+    if (user.username && user.password && user.department) {
         const hash = bcrypt.hashSync(user.password, 2);
         user.password = hash;
         userDB.add(user)
@@ -33,7 +33,7 @@ server.post('/api/register', (req, res) => {
         })
 
     } else {
-        res.status(400).json({error: "Please provide both username and password"})
+        res.status(400).json({error: "Please provide both username and password and department"})
     }
 })
 
@@ -61,7 +61,7 @@ server.post('/api/login', (req, res) => {
                 secret
             });
         } else {
-            res.status(401).json({message: "Invalid credentials!"})
+            res.status(401).json({message: "Invalid credentials! You shall not pass."})
         }
         
     })
@@ -82,7 +82,7 @@ function restricted(req, res, next) {
             }
         });
     } else {
-        req.status(401).json({message: "Unauthorized credentials."})
+        res.status(401).json({message: "Unauthorized credentials. You shall not pass."})
     }
 }
 
