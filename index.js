@@ -11,9 +11,10 @@ const secret =
 
 const server = express();
 
+server.use(cors({origin: true, credentials: true}));
 server.use(helmet());
 server.use(express.json());
-server.use(cors());
+
 
 server.get('/', (req, res) => {
     res.send("Just proof that it's functional.")

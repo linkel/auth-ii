@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
+import Auth from './components/Auth';
+import Login from './components/Login';
+import {Route} from 'react-router-dom';
+
+axios.defaults.withCredentials = true; 
 
 class App extends Component {
   constructor(props) {
@@ -11,8 +16,13 @@ class App extends Component {
     }
   }
   componentDidMount() {
+    console.log(localStorage.getItem("token"))
+    let options = { 
+      headers: {
+          Authorization: localStorage.getItem("token"),
+      }}
     axios
-    .get('http://localhost:5000/api/users')
+    .get('http://localhost:5000/api/users',options)
     .then(response => {
       console.log(response)
       this.setState({userList: response.data})
@@ -43,4 +53,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Auth(App)(Login);
