@@ -10,38 +10,54 @@ const Auth = App => LoginPage => {
             this.state = {
                 loggedIn : false,
                 username : null,
+                userList : []
             }
         }
         componentDidMount() {
-            // handle setting logged in if session exists
-            console.log("login page section")
-            // axios // POST REQ
-            // .get('http://localhost:5000/api/users/')
-            // .then(response => {
-            //     console.log(response);
-            //     this.setState({loggedIn:true});
-            // })
-            // .catch(err => {
-            //     console.log(err)
-            // })
+            let options = { 
+                headers: {
+                    Authorization: localStorage.getItem("token"),
+                }}
+              axios
+              .get('http://localhost:5000/api/users',options)
+              .then(response => {
+                console.log(response)
+                this.setState({userList: response.data, loggedIn: true})
+              })
+              .catch(err => {
+                console.log(err)
+              })
         }
         handleLogin = e => {
             e.preventDefault();
-            console.log("okay, you tried")
             let loginObj = {
                 username: e.target[0].value,
                 password: e.target[1].value
             }
+            
             axios // POST REQ
             .post('http://localhost:5000/api/login/', loginObj)
             .then(response => {
-                console.log(response)
-                this.setState({loggedIn: true})
                 localStorage.setItem("token",response.data.token)
+                let options = { 
+                    headers: {
+                        Authorization: localStorage.getItem("token"),
+                    }}
+                  axios
+                  .get('http://localhost:5000/api/users',options)
+                  .then(response => {
+                    console.log(response)
+                    this.setState({userList: response.data})
+                  })
+                  .catch(err => {
+                    console.log(err)
+                  })
+                this.setState({loggedIn: true})
             })
             .catch(err => {
                 console.log(err)
             })
+
         }
         handleRegister = e => {
             console.log("register was clicked")
@@ -60,21 +76,14 @@ const Auth = App => LoginPage => {
                 console.log(err)
             })
         }
-        logOut = e => {
-            this.setState({loggedIn: false})
-            axios
-            .get('http://localhost:5000/api/logout/')
-            .then(res => {
-                console.log("hey you logged out good job")
-            })
-            .catch(err => {
-                console.log("CANT LEAVE")
-            })
+        signOut = e => {
+            this.setState({loggedIn: false, userList:[]})
+            localStorage.clear();
         }
         render() {
             if (this.state.loggedIn) {
                 return (
-                    <App logOut={this.logOut}/>
+                    <App signOut={this.signOut}/>
                 )
             } else {
                 return (

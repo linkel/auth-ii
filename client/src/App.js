@@ -11,12 +11,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userList : [],
+      userList : this.props.userList,
       userListVisible:false,
     }
   }
   componentDidMount() {
-    console.log(localStorage.getItem("token"))
     let options = { 
       headers: {
           Authorization: localStorage.getItem("token"),
@@ -47,6 +46,7 @@ class App extends Component {
             <div></div>
             }
           </div>
+          <button onClick={this.props.signOut}>Sign Out</button>
         </header>
       </div>
     );
