@@ -1,56 +1,34 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import Auth from './components/Auth';
-import Login from './components/Login';
-import {Route} from 'react-router-dom';
-
+import {Route, NavLink, withRouter} from 'react-router-dom';
+import Login from './components/Login'
+import Users from './components/Users'
+import Signup from './components/Signup';
 axios.defaults.withCredentials = true; 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userList : this.props.userList,
-      userListVisible:false,
-    }
-  }
-  componentDidMount() {
-    let options = { 
-      headers: {
-          Authorization: localStorage.getItem("token"),
-      }}
-    axios
-    .get('http://localhost:5000/api/users',options)
-    .then(response => {
-      console.log(response)
-      this.setState({userList: response.data})
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
-  toggleUserList = () => {
-    this.setState({userListVisible: !this.state.userListVisible})
-  }
+  logout = () => {
+    localStorage.removeItem('token');
+    this.props.history.push('/signin');
+  };
   render() {
     return (
       <div className="App">
+          <nav class="navbar">
+            <NavLink to="/signin">Login</NavLink>
+            <NavLink to="/signup">Sign Up</NavLink>
+            <NavLink to="/users">Users</NavLink>
+            <button onClick={this.logout}>Logout</button>
+          </nav>
         <header className="App-header">
-          <h1>Welcome to your home page.</h1>
-          <button onClick={this.toggleUserList}>Show UserList</button>
-          <div>
-            { this.state.userListVisible ? 
-            this.state.userList.map(user => <div key={user.username}>{user.username}</div>)
-            :
-            <div></div>
-            }
-          </div>
-          <button onClick={this.props.signOut}>Sign Out</button>
+        <Route path="/users" render={(props) => <Users {...props}/>}/>
+        <Route path="/signin" render={(props) => <Login {...props}/>}/>
+        <Route path="/signup" render = {(props) => <Signup {...props}/>}/>
         </header>
       </div>
     );
   }
 }
 
-export default Auth(App)(Login);
+export default withRouter(App);
